@@ -1,0 +1,13 @@
+{
+    "name": "saosangmo/simphptwig",
+    "description": "Twig asset extension for simphp",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.0",
+        "twig/twig": "^2.14"
+    },    
+    "autoload": {
+        "classmap": ["src"]
+    }
+}
