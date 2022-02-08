@@ -36,7 +36,6 @@ class Extension extends AbstractExtension
             new TwigFunction('lang', array($this, 'langFunction')),
             new TwigFunction('config', array($this, 'configFunction')),
             new TwigFunction('paginate', array($this, 'paginateFunction')),
-            new TwigFunction('image', array($this, 'imageFunction')),
             new TwigFunction('asset', array($this, 'assetFunction')),
             new TwigFunction('load', array($this, 'loadFunction')),
             new TwigFunction('can_access', array($this, 'canAccessFunction')),
@@ -134,64 +133,6 @@ class Extension extends AbstractExtension
         }
 
         return false;
-    }
-
-    /**
-     * @param        $filename
-     * @param string $context
-     *
-     * @param null   $width
-     * @param null   $height
-     *
-     * @return string|void
-     */
-    public function imageFunction($filename, $context = 'product', $width = null, $height = null) {
-        if (!is_file(DIR_MEDIA . $filename)) {
-            return;
-        }
-
-        $request = $this->registry->get('request');
-        $config = $this->registry->get('config');
-
-        if(!$width) {
-            $width = $config->get('config_image_'. $context .'_width');
-        }
-
-        if(!$height) {
-            $height = $config->get('config_image_'. $context .'_height');
-        }
-
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
-
-        $old_image = $filename;
-        $new_image = 'cache/' . utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '-' . $width . 'x' . $height . '.' . $extension;
-
-        if (!is_file(DIR_MEDIA . $new_image) || (filectime(DIR_MEDIA . $old_image) > filectime(DIR_MEDIA . $new_image))) {
-            $path = '';
-
-            $directories = explode('/', dirname(str_replace('../', '', $new_image)));
-
-            foreach ($directories as $directory) {
-                $path = $path . '/' . $directory;
-
-                if (!is_dir(DIR_MEDIA . $path)) {
-                    @mkdir(DIR_MEDIA . $path, 0777);
-                }
-            }
-
-            list($width_orig, $height_orig) = getimagesize(DIR_MEDIA . $old_image);
-
-            if ($width_orig != $width || $height_orig != $height) {
-                $image = new Image(DIR_MEDIA . $old_image);
-                $image->resize($width, $height);
-                $image->save(DIR_MEDIA . $new_image);
-            } else {
-                copy(DIR_MEDIA . $old_image, DIR_MEDIA . $new_image);
-            }
-        }
-
-        
-       return $this->is_admin ? HTTP_CATALOG . 'media/' . $new_image : HTTP_SERVER . 'media/' . $new_image;
     }
 
     /**
